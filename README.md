@@ -2,8 +2,7 @@
 
 [Original post](http://alexyshegmann.com/one-game-a-month-challenge/)
 
-I just found out there’s [a challenge](http://www.onegameamonth.com/) in which you have to create a game each month. Not your best game, not even a good game, just a game.
-#1GAM!
+I just found out there’s [a challenge](http://www.onegameamonth.com/) in which you have to create a game each month. Not your best game, not even a good game, just a game. #1GAM!
 
 We all have gone through that vicious cycle: you have a great idea and you get excited; you start planning out the next big thing, draw a few mock ups, even write the first draft of the GDD; you start hitting the keyboard and create a few parts of the system… then you have some other priorities and the big game starts to pile dust; then a new idea comes and the cycle starts all over again.
 
