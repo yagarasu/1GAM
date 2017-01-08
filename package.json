@@ -1,0 +1,23 @@
+{
+  "name": "1gam",
+  "version": "1.0.0",
+  "description": "One game a month challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:jan": "node_modules/.bin/browserify jan/src/index.js -o jan/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yagarasu/1GAM.git"
+  },
+  "author": "Alexys Hegmann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yagarasu/1GAM/issues"
+  },
+  "homepage": "https://github.com/yagarasu/1GAM#readme",
+  "dependencies": {
+    "browserify": "^13.3.0"
+  }
+}
