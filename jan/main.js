@@ -63,12 +63,9 @@ Maze.prototype.getNeightbors = function (x, y) {
 };
 
 Maze.prototype.carve = function () {
-  console.log('carve');
   var x = 0, y = 0, i = 0, visited = [0], stack = [];
-  var maxIter = 200, cIter = 0;
-  while (visited.length !== this.cells && cIter < maxIter) {
+  while (visited.length !== (this.cells.length-1)) {
     var neighbors = this.getNeightbors(x, y);
-    console.log(neighbors);
     var availableNeighbors = [];
     for (var k in neighbors) {
       if (neighbors[k] !== null && visited.indexOf(neighbors[k]) === -1) {
@@ -78,7 +75,6 @@ Maze.prototype.carve = function () {
     if (availableNeighbors.length > 0) {
       stack.push(i);
       var rndNeighbor = availableNeighbors[Math.floor(Math.random() * availableNeighbors.length)];
-      console.log('Choose random neigh', rndNeighbor);
       switch (rndNeighbor) {
         case 'top':
           this.unsetCellWall(i, WALL_TOP);
@@ -108,10 +104,7 @@ Maze.prototype.carve = function () {
       x = prevPos[0];
       y = prevPos[1];
       i = prev;
-    } else {
-      console.log('Ended');
     }
-    cIter++;
   }
 };
 
@@ -154,7 +147,7 @@ var gameState = {
   preload: function () {},
   
   create: function () {
-    var w = 10, h = 10;
+    var w = 21, h = 14;
     this.mazeBmp = game.add.graphics(15, 15);
     this.mazeBmp.beginFill(0x666600);
     this.mazeBmp.lineStyle(1, 0xFFFFFF, 0.8);

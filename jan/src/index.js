@@ -35,7 +35,7 @@ var gameState = {
   preload: function () {},
   
   create: function () {
-    var w = 10, h = 10;
+    var w = 21, h = 14;
     this.mazeBmp = game.add.graphics(15, 15);
     this.mazeBmp.beginFill(0x666600);
     this.mazeBmp.lineStyle(1, 0xFFFFFF, 0.8);
