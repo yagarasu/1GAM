@@ -7,6 +7,7 @@ var Maze = function (width, height) {
   this.width = width;
   this.height = height;
   this.cells = [];
+  this.walls = {};
   for (var i = 0; i < (width*height); i++) {
     this.cells.push(0xF);
   }
@@ -14,8 +15,8 @@ var Maze = function (width, height) {
 };
 
 Maze.prototype.getIndex = function (x, y) {
-  if (x < 0 || x >= this.width) throw new Error('Undefined cell. X overflows.');
-  if (y < 0 || y >= this.height) throw new Error('Undefined cell. Y overflows.');
+  if (x < 0 || x >= this.width) return null;
+  if (y < 0 || y >= this.height) return null;
   return (y * this.width) + x;
 };
 
@@ -27,16 +28,17 @@ Maze.prototype.getXYFromIdx = function (idx) {
 
 Maze.prototype.getCell = function (x, y) {
   var idx = this.getIndex(x, y);
+  if (idx === null) return null;
   return this.cells[idx];
 };
 
 Maze.prototype.setCellWall = function (idx, wallFlags) {
-  if (idx < 0 || idx >= this.cells.length) throw new Error('Undefined cell. Index overflow.');
+  if (idx < 0 || idx >= this.cells.length) throw new Error('Undefined cell. Index overflow. ' + idx);
   this.cells[idx] = this.cells[idx] | wallFlags;
 };
 
 Maze.prototype.unsetCellWall = function (idx, wallFlags) {
-  if (idx < 0 || idx >= this.cells.length) throw new Error('Undefined cell. Index overflow.');
+  if (idx < 0 || idx >= this.cells.length) throw new Error('Undefined cell. Index overflow.' + idx);
   this.cells[idx] = this.cells[idx] & ~wallFlags;
 };
 
