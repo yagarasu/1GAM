@@ -107,6 +107,15 @@ Maze.prototype.carve = function () {
       i = prev;
     }
   }
+  // Remove redundant walls
+  for (var y = 0; y < this.height; y++) {
+    for (var x = 0; x < this.width; x++) {
+      var curCell = this.getCell(x, y),
+          neighbors = this.getNeightbors(x, y);
+      if (curCell & WALL_RIGHT && neighbors.right !== null && this.cells[neighbors.right] & WALL_LEFT) this.unsetCellWall(neighbors.right, WALL_LEFT);
+      if (curCell & WALL_BOTTOM && neighbors.bottom !== null && this.cells[neighbors.bottom] & WALL_TOP) this.unsetCellWall(neighbors.bottom, WALL_TOP);
+    }
+  }
 };
 
 module.exports = Maze;

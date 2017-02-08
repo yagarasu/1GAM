@@ -108,6 +108,15 @@ Maze.prototype.carve = function () {
       i = prev;
     }
   }
+  // Remove redundant walls
+  for (var y = 0; y < this.height; y++) {
+    for (var x = 0; x < this.width; x++) {
+      var curCell = this.getCell(x, y),
+          neighbors = this.getNeightbors(x, y);
+      if (curCell & WALL_RIGHT && neighbors.right !== null && this.cells[neighbors.right] & WALL_LEFT) this.unsetCellWall(neighbors.right, WALL_LEFT);
+      if (curCell & WALL_BOTTOM && neighbors.bottom !== null && this.cells[neighbors.bottom] & WALL_TOP) this.unsetCellWall(neighbors.bottom, WALL_TOP);
+    }
+  }
 };
 
 module.exports = Maze;
@@ -156,23 +165,25 @@ var gameState = {
     }
   },
   
-  canWalkThrough: function () {
-    var tlX = Math.floor((this.char.x - margins) / this.tileSize),
-        tlY = Math.floor((this.char.y - margins) / this.tileSize),
-        brX = Math.floor((this.char.x + this.char.width - margins) / this.tileSize),
-        brY = Math.floor((this.char.y + this.char.height - margins) / this.tileSize);
+  canWalkThrough: function (d) { return true; },
+  
+  canWalkThrough_: function (direction) {
+    var tlX = Math.round((this.char.x - margins) / this.tileSize),
+        tlY = Math.round((this.char.y - margins) / this.tileSize),
+        brX = Math.round((this.char.x + this.char.width - margins) / this.tileSize),
+        brY = Math.round((this.char.y + this.char.height - margins) / this.tileSize);
     var tlXp = this.char.x,
         tlYp = this.char.y,
-        brXp = Math.floor(this.char.x + this.char.width),
-        brYp = Math.floor(this.char.y + this.char.height),
+        brXp = this.char.x + this.char.width,
+        brYp = this.char.y + this.char.height,
         slt = new Phaser.Line(tlXp, tlYp, brXp, tlYp),
         slr = new Phaser.Line(brXp, tlYp, brXp, brYp),
         slb = new Phaser.Line(tlXp, brYp, brXp, brYp),
         sll = new Phaser.Line(tlXp, tlYp, tlXp, brYp);
-        game.debug.geom(slt, '#0cc');
-        game.debug.geom(slr, '#0cc');
-        game.debug.geom(slb, '#0cc');
-        game.debug.geom(sll, '#0cc');
+        game.debug.geom(slt, '#f00');
+        game.debug.geom(slr, '#f00');
+        game.debug.geom(slb, '#f00');
+        game.debug.geom(sll, '#f00');
     var tlC = this.maze.getIndex(tlX, tlY),
         trC = this.maze.getIndex(brX, tlY),
         blC = this.maze.getIndex(tlX, brY),
@@ -182,10 +193,11 @@ var gameState = {
     if (cells.indexOf(trC) === -1) cells.push(trC);
     if (cells.indexOf(blC) === -1) cells.push(blC);
     if (cells.indexOf(brC) === -1) cells.push(brC);
+    game.debug.text( "Cells: " + cells.length, 1, 1 );
     for (var ci = 0; ci < cells.length; ci++) {
       var curCell = this.maze.cells[cells[ci]];
       var curCellPos = this.maze.getXYFromIdx(cells[ci]);
-      if (curCell & WALL_TOP) {
+      if (direction === 'UP' && curCell & WALL_TOP) {
         var wallPosX1 = (curCellPos[0] * this.tileSize) + margins,
             wallPosY1 = (curCellPos[1] * this.tileSize) + margins,
             wallPosX2 = (curCellPos[0] * this.tileSize) + this.tileSize + margins,
@@ -194,7 +206,7 @@ var gameState = {
         game.debug.geom(wallObj, '#c00');
         if (wallObj.intersects(sll) !== null || wallObj.intersects(slr) !== null) return false;
       }
-      if (curCell & WALL_RIGHT) {
+      if (direction === 'RIGHT' && curCell & WALL_RIGHT) {
         var wallPosX1 = (curCellPos[0] * this.tileSize) + this.tileSize + margins,
             wallPosX2 = (curCellPos[0] * this.tileSize) + this.tileSize + margins,
             wallPosY1 = (curCellPos[1] * this.tileSize) + margins,
@@ -203,7 +215,7 @@ var gameState = {
         game.debug.geom(wallObj, '#c00');
         if (wallObj.intersects(slt) !== null || wallObj.intersects(slb) !== null) return false;
       }
-      if (curCell & WALL_BOTTOM) {
+      if (direction === 'DOWN' && curCell & WALL_BOTTOM) {
         var wallPosX1 = (curCellPos[0] * this.tileSize) + margins,
             wallPosX2 = (curCellPos[0] * this.tileSize) + this.tileSize + margins,
             wallPosY1 = (curCellPos[1] * this.tileSize) + this.tileSize + margins,
@@ -212,7 +224,7 @@ var gameState = {
         game.debug.geom(wallObj, '#c00');
         if (wallObj.intersects(sll) !== null || wallObj.intersects(slr) !== null) return false;
       }
-      if (curCell & WALL_LEFT) {
+      if (direction === 'LEFT' && curCell & WALL_LEFT) {
         var wallPosX1 = (curCellPos[0] * this.tileSize) + margins,
             wallPosX2 = (curCellPos[0] * this.tileSize) + margins,
             wallPosY1 = (curCellPos[1] * this.tileSize) + margins,
@@ -255,38 +267,35 @@ var gameState = {
     this.char.body.velocity.set(0);
     if (this.ctrls.up.isDown) {
       this.char.play('back');
-      if (this.canWalkThrough()) {
+      if (this.canWalkThrough('UP')) {
         this.char.body.velocity.y = speed * -1;
-      } else {
-        this.char.y += 5;
       }
     } else
     if (this.ctrls.right.isDown) {
       this.char.play('right');
-      if (this.canWalkThrough()) {
+      if (this.canWalkThrough('RIGHT')) {
         this.char.body.velocity.x = speed;
-      } else {
-        this.char.x -= 5;
       }
     } else
     if (this.ctrls.down.isDown) {
       this.char.play('front');
-      if (this.canWalkThrough()) {
+      if (this.canWalkThrough('DOWN')) {
         this.char.body.velocity.y = speed;
-      } else {
-        this.char.y -= 5;
       }
     } else
     if (this.ctrls.left.isDown) {
       this.char.play('left');
-      if (this.canWalkThrough()) {
+      if (this.canWalkThrough('LEFT')) {
         this.char.body.velocity.x = speed * -1;
-      } else {
-        this.char.x += 5;
       }
     } else {
       this.char.animations.stop();
     }
+  },
+  
+  render: function () {
+    
+    game.debug.text('foo',0,0,'#fff');
   }
 };
 
