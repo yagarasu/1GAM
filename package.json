@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:jan": "node_modules/.bin/browserify jan/src/index.js -o jan/main.js"
+    "build:jan": "node_modules/.bin/browserify jan/src/index.js -o jan/main.js",
+    "build:feb": "node_modules/.bin/browserify feb/src/index.js -o feb/main.js"
   },
   "repository": {
     "type": "git",
